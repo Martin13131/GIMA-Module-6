@@ -114,26 +114,26 @@ end
 while Time <= TimeEnd
     % Baseline calc
     Change = Landuses(:,1);
-        % For each landuse at T = 0
+    % For each landuse at T = 0
     for i = 1:8
         % Get random indices of the number of changes
-%         ToChange = datasample(find(Landuses(:,1)==i), sum(NrChanges(i,:)),'Replace',false);
-%         for j = 1:8
-%             [Rands, idx] = datasample(ToChange, NrChanges(i,j),'Replace',false);
-%             ToChange(idx) = [];
-%             Change(Rands) = j;
-%         end
+        %         ToChange = datasample(find(Landuses(:,1)==i), sum(NrChanges(i,:)),'Replace',false);
+        %         for j = 1:8
+        %             [Rands, idx] = datasample(ToChange, NrChanges(i,j),'Replace',false);
+        %             ToChange(idx) = [];
+        %             Change(Rands) = j;
+        %         end
         [val, Change(Change == i)] = max(NrChanges(i,:),[],2);
     end
-        BaseLineErrors(Time) = sum(Change ~= Landuses(:,2));
+    BaseLineErrors(Time) = sum(Change ~= Landuses(:,2));
     
     
-    % Regression calc   
+    % Regression calc
     [maxval, Change] = max(ActOdds,[],2); % R2 = 0.4669
     RegressionErrors(Time) = sum(Change ~= Landuses(:,2));
-
-
+    
+    
     Time = Time + 1;
 end
 
-1-RegressionErrors/BaselineErrors
+1 - RegressionErrors / BaseLineErrors

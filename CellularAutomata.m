@@ -22,18 +22,20 @@ B7 = b;
 load StatisticBLanduse8
 B8 = b;
 
-myField = randi(8,1000);
+myField = load('bbg2000zholland.txt');
+%myField = myField(2:1001,2:1001);
+myField = floor(myField/10);
 [ny, nx] = size(myField);
 
 StartTime = 1;
-EndTime = 100;
+EndTime = 5;
 Step = 1;
 Time = StartTime;
 Change = zeros(ny-2*Step,nx-2*Step);
 
-% writerObj = VideoWriter('LanduseMovie.avi','Uncompressed AVI'); % initialize AVI movie
-% writerObj.FrameRate = 5; % set frames per second (has to be done before open!)
-% open(writerObj)
+writerObj = VideoWriter('LanduseZHolland.avi','Uncompressed AVI'); % initialize AVI movie
+writerObj.FrameRate = 5; % set frames per second (has to be done before open!)
+open(writerObj)
 %% Dynamic
 while Time <= EndTime
     tic
@@ -53,23 +55,29 @@ while Time <= EndTime
             switch CurLoc
                 case 1
                     Odds = mnrval(B1, PredictorData);
+                    Odds([CurLoc,8]) = Odds([8, CurLoc]);
                 case 2
                     Odds = mnrval(B2, PredictorData);
+                    Odds([CurLoc,8]) = Odds([8, CurLoc]);
                 case 3
                     Odds = mnrval(B3, PredictorData);
+                    Odds([CurLoc,8]) = Odds([8, CurLoc]);
                 case 4
                     Odds = mnrval(B4, PredictorData);
+                    Odds([CurLoc,7]) = Odds([7,CurLoc]);
                 case 5
                     Odds = mnrval(B5, PredictorData);
+                    Odds([CurLoc,7]) = Odds([7,CurLoc]);
                 case 6
                     Odds = mnrval(B6, PredictorData);
+                    Odds([CurLoc,8]) = Odds([8, CurLoc]);
                 case 7
                     Odds = mnrval(B7, PredictorData);
+                    Odds([CurLoc,8]) = Odds([8, CurLoc]);
                 case 8
                     Odds = mnrval(B8, PredictorData);
                     Odds = [Odds(1:4),0,Odds(5:end)];
             end
-            Odds = SwapVals(Odds, CurLoc, 8); % Check this
             Change(i-Step,j-Step) = PickRandom(Odds);
         end
     end
@@ -78,9 +86,10 @@ while Time <= EndTime
     %% Visualization
     imagesc(myField)
     colorbar; drawnow;
-    %     frame = getframe(gcf);
-    %     writeVideo(writerObj,frame);
+    title('Landuse in a 10km x 10km "Zuid-Holland" grid regression results')
+        frame = getframe(gcf);
+        writeVideo(writerObj,frame);
     
     Time = Time + 1;
 end
-% close(writerObj);
+close(writerObj);

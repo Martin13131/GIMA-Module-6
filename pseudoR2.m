@@ -61,81 +61,81 @@ clear TimeAll Coordinates Adjacency Percentages
 Time = 1;
 EndTime = 100;
 % while Time <= EndTime
-    parfor i = 1:length(Landuses)
-        switch Landuses(i,1)
-            case 1
-                Odds = mnrval(B1, PredictorData(i,:));
-                Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
-            case 2
-                Odds = mnrval(B2, PredictorData(i,:));
-                Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
-            case 3
-                Odds = mnrval(B3, PredictorData(i,:));
-                Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
-            case 4
-                Odds = mnrval(B4, PredictorData(i,:));
-                Odds([Landuses(i,1),7]) = Odds([7,Landuses(i,1)]);
-            case 5
-                Odds = mnrval(B5, PredictorData(i,:));
-                Odds([Landuses(i,1),7]) = Odds([7,Landuses(i,1)]);
-            case 6
-                Odds = mnrval(B6, PredictorData(i,:));
-                Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
-            case 7
-                Odds = mnrval(B7, PredictorData(i,:));
-                Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
-            case 8
-                Odds = mnrval(B8, PredictorData(i,:));
-                Odds = [Odds(1:4),0,Odds(5:end)];
-        end
-        Change(i) = PickRandom(Odds);
+parfor i = 1:length(Landuses)
+    switch Landuses(i,1)
+        case 1
+            Odds = mnrval(B1, PredictorData(i,:));
+            Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
+        case 2
+            Odds = mnrval(B2, PredictorData(i,:));
+            Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
+        case 3
+            Odds = mnrval(B3, PredictorData(i,:));
+            Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
+        case 4
+            Odds = mnrval(B4, PredictorData(i,:));
+            Odds([Landuses(i,1),7]) = Odds([7,Landuses(i,1)]);
+        case 5
+            Odds = mnrval(B5, PredictorData(i,:));
+            Odds([Landuses(i,1),7]) = Odds([7,Landuses(i,1)]);
+        case 6
+            Odds = mnrval(B6, PredictorData(i,:));
+            Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
+        case 7
+            Odds = mnrval(B7, PredictorData(i,:));
+            Odds([Landuses(i,1),8]) = Odds([8, Landuses(i,1)]);
+        case 8
+            Odds = mnrval(B8, PredictorData(i,:));
+            Odds = [Odds(1:4),0,Odds(5:end)];
     end
-    
+    Change(i) = PickRandom(Odds);
+end
+
 %     MaxY = max(Coordinates(:,1));
 %     MaxX = max(Coordinates(:,2));
 %     MaxZ = max(Coordinates(:,3));
 %     RegressionResults(1:MaxY,1:MaxX,1:MaxZ) = 0;
-%     
+%
 %     for i = 1:length(Coordinates)
-%        RegressionResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Change(i); 
+%        RegressionResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Change(i);
 %     end
-%     
+%
 %     RegressionErrors(:,Time) = sum(Change ~= Landuses(:,2)');
-%    
+%
 %     for i = 1:8
 %        Counts(i) = sum(Change == i);
 %     end
-    
-    %% establishing baseline on random selection based on percentage
-    % Calculate total number of changes from and to each landuse
-    for i = 1:8
-        for j = 1:8
-            NrChanges(i,j) = sum((Landuses(:,1)==i) & (Landuses(:,2) == j));
-        end
+
+%% establishing baseline on random selection based on percentage
+% Calculate total number of changes from and to each landuse
+for i = 1:8
+    for j = 1:8
+        NrChanges(i,j) = sum((Landuses(:,1)==i) & (Landuses(:,2) == j));
     end
-    
-    % Initialise "change variable"
-    Change = Landuses(:,1);
-    % For each landuse at T = 0
-    for i = 1:8
-        % Get random indices of the number of changes
-        ToChange = datasample(find(Landuses(:,1)==i), sum(NrChanges(i,:)),'Replace',false);
-        for j = 1:8
-            [Rands, idx] = datasample(ToChange, NrChanges(i,j),'Replace',false);
-            ToChange(idx) = [];
-            Change(Rands) = j;
-        end
+end
+
+% Initialise "change variable"
+Change = Landuses(:,1);
+% For each landuse at T = 0
+for i = 1:8
+    % Get random indices of the number of changes
+    ToChange = datasample(find(Landuses(:,1)==i), sum(NrChanges(i,:)),'Replace',false);
+    for j = 1:8
+        [Rands, idx] = datasample(ToChange, NrChanges(i,j),'Replace',false);
+        ToChange(idx) = [];
+        Change(Rands) = j;
     end
-    
-    
-    
-    BaselineResults(1:MaxY,1:MaxX,1:MaxZ) = 0;
-    for i = 1:length(Coordinates)
-       BaselineResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Change(i); 
-    end
-    
-    BaselineErrors(:,Time) = sum(Change ~= Landuses(:,2));
-    Time = Time + 1;
+end
+
+
+
+BaselineResults(1:MaxY,1:MaxX,1:MaxZ) = 0;
+for i = 1:length(Coordinates)
+    BaselineResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Change(i);
+end
+
+BaselineErrors(:,Time) = sum(Change ~= Landuses(:,2));
+Time = Time + 1;
 % end
 %% R square
 1 - (RegressionErrors / BaselineErrors); % becomes 0.0155
@@ -143,7 +143,7 @@ EndTime = 100;
 %% Mapping actual vs regression vs baseline
 ActualResults(1:MaxY,1:MaxX,1:MaxZ) = 0;
 for i = 1:length(Coordinates)
-    ActualResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Landuses(i,2); 
+    ActualResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Landuses(i,2);
 end
 figure(1)
 for i = 1:4
