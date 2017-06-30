@@ -1,3 +1,59 @@
+%% Loading data
+load StatisticBLanduse1
+B1 = b;
+load StatisticBLanduse2
+B2 = b;
+load StatisticBLanduse3
+B3 = b;
+load StatisticBLanduse4
+B4 = b;
+load StatisticBLanduse5
+B5 = b;
+load StatisticBLanduse6
+B6 = b;
+load StatisticBLanduse7
+B7 = b;
+load StatisticBLanduse8
+B8 = b;
+
+Time1 = load('Timestep1.mat');
+Time1 = Time1.FullData;
+Errors = Time1 == 0;
+Time1(sum(Errors, 2) == 21, :) = [];
+
+Time2 = load('Timestep2.mat');
+Time2 = Time2.FullData;
+Errors = Time2 ==0;
+Time2(sum(Errors, 2)==21, :) = [];
+
+Time3 = load('Timestep3.mat');
+Time3 = Time3.FullData;
+Errors = Time3 == 0;
+Time3(sum(Errors, 2) == 21, :) = [];
+
+Time4 = load('Timestep4.mat');
+Time4 = Time4.FullData;
+Errors = Time4 == 0;
+Time4(sum(Errors, 2) == 21, :) = [];
+
+% Time5 = load('Timestep5.mat');
+% Time5 = Time5.FullData;
+% Errors = Time5 == 0;
+% Time5(sum(Errors, 2) == 21, :) = [];
+
+clear Errors
+
+TimeAll = [Time1; Time2; Time3; Time4];
+clear Time1 Time2 Time3 Time4 Time5
+
+% Divide into different arrays
+Coordinates = TimeAll(:,1:3);
+Landuses = TimeAll(:,4:5);
+Adjacency = TimeAll(:,6:13);
+Percentages = TimeAll(:,14:21);
+PredictorData = [Adjacency,Percentages];
+clear TimeAll Adjacency Percentages
+
 %% Initialising variables
 [UniqueLocations, ia, ic]= unique([PredictorData,Landuses(:,1)],'rows');
 Odds(1:length(UniqueLocations),1:8) = 0;
@@ -6,7 +62,6 @@ Time = 1;
 TimeEnd = 100;
 RegressionErrors(1:TimeEnd) = 0;
 BaselineErrors(1:TimeEnd) = 0;
-
 %% Get the odds from mnrval for every unique window
 
 for i = 1:length(UniqueLocations)
@@ -69,41 +124,24 @@ while Time <= TimeEnd
         end
         %[val, Change(Change == i)] = max(NrChanges(i,:),[],2);
     end
+%     BaselineResults(1:MaxY,1:MaxX,1:MaxZ) = 0;
+%     
+%     for i = 1:length(Coordinates)
+%        BaselineResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Change(i)~= Landuses(i,2); 
+%     end
     BaseLineErrors(Time) = sum(Change ~= Landuses(:,2));
     
-    % Visualize baseline results
-%     subplot(1,2,1)
-%     imagesc(Coordinates(:,2),Coordinates(:,1),Change)
-%     title('Baseline')
     
     % Regression calc   
     Change = PickRandom(ActOdds);
     %[maxval, Change] = max(ActOdds,[],2); % R2 = 0.4669
     RegressionErrors(Time) = sum(Change ~= Landuses(:,2));
     
-    % visualise regression results
-%     subplot(1,2,1)
-%     imagesc(Coordinates(:,2),Coordinates(:,1),Change)
-%     title('Regression')
-%     drawnow
+%     RegressionResults(1:MaxY,1:MaxX,1:MaxZ) = 0;    
+%     for i = 1:length(Coordinates)
+%         RegressionResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Change(i) ~= Landuses(i,2);
+%     end
+
 
     Time = Time + 1;
 end
-
-%% Deterministic montecarlo
-BaselineOdds = NrChanges./sum(NrChanges,2);
-%  = BaselineOdds([Landuses(:,1)],[Landuses(:,2)]);
-[UniqueBase, ia2, ic2] = unique(Landuses,'rows');
-
-for i = 1:length(UniqueBase)
-    UniqueOdds(i) = BaselineOdds(UniqueBase(i,1),UniqueBase(i,2));
-end
-
-BaselineCorrect(1:length(Landuses),1) = UniqueOdds(ic2);
-BaselineErrors = 1-BaselineCorrect;
-% Regression
-RegressionCorrect(1:length(Landuses)) = 0;
-for i = 1:length(Landuses)
-    RegressionCorrect(i) = ActOdds(i,Landuses(i,2));
-end
-RegressionErrors = 1 - RegressionCorrect;

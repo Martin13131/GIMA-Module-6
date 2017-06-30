@@ -125,9 +125,7 @@ for i = 1:8
     save(['Landuse',num2str(i),'.mat'],'Predictor','Response','-v7.3')
 end
 
-tic
 for i = 1:8
 [b,dev,stats] = mymnrfit(Predictor, Response);
 save(['LowResLanduseB',num2str(i),'.mat'],'b','dev','stats')
 end
-toc

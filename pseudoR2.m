@@ -91,20 +91,20 @@ EndTime = 100;
         Change(i) = PickRandom(Odds);
     end
     
-    MaxY = max(Coordinates(:,1));
-    MaxX = max(Coordinates(:,2));
-    MaxZ = max(Coordinates(:,3));
-    RegressionResults(1:MaxY,1:MaxX,1:MaxZ) = 0;
-    
-    for i = 1:length(Coordinates)
-       RegressionResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Change(i); 
-    end
-    
-    RegressionErrors(:,Time) = sum(Change ~= Landuses(:,2)');
-   
-    for i = 1:8
-       Counts(i) = sum(Change == i);
-    end
+%     MaxY = max(Coordinates(:,1));
+%     MaxX = max(Coordinates(:,2));
+%     MaxZ = max(Coordinates(:,3));
+%     RegressionResults(1:MaxY,1:MaxX,1:MaxZ) = 0;
+%     
+%     for i = 1:length(Coordinates)
+%        RegressionResults(Coordinates(i,1),Coordinates(i,2),Coordinates(i,3)) = Change(i); 
+%     end
+%     
+%     RegressionErrors(:,Time) = sum(Change ~= Landuses(:,2)');
+%    
+%     for i = 1:8
+%        Counts(i) = sum(Change == i);
+%     end
     
     %% establishing baseline on random selection based on percentage
     % Calculate total number of changes from and to each landuse
