@@ -22,8 +22,9 @@ B7 = b;
 load StatisticBLanduse8
 B8 = b;
 
-myField = load('bbg2000zholland.txt');
-%myField = myField(2:1001,2:1001);
+myField = load('bbg2000nholland.txt');
+myField(myField == -9999) = NaN;
+myField = myField(3:1000,3:1000);
 myField = floor(myField/10);
 [ny, nx] = size(myField);
 
@@ -33,9 +34,9 @@ Step = 1;
 Time = StartTime;
 Change = zeros(ny-2*Step,nx-2*Step);
 
-writerObj = VideoWriter('LanduseZHolland.avi','Uncompressed AVI'); % initialize AVI movie
-writerObj.FrameRate = 5; % set frames per second (has to be done before open!)
-open(writerObj)
+% writerObj = VideoWriter('LanduseMovie.avi','Uncompressed AVI'); % initialize AVI movie
+% writerObj.FrameRate = 5; % set frames per second (has to be done before open!)
+% open(writerObj)
 %% Dynamic
 while Time <= EndTime
     tic
@@ -86,10 +87,14 @@ while Time <= EndTime
     %% Visualization
     imagesc(myField)
     colorbar; drawnow;
-    title('Landuse in a 10km x 10km "Zuid-Holland" grid regression results')
-        frame = getframe(gcf);
-        writeVideo(writerObj,frame);
+    title('Landuse in a 1000 x 1000 random grid CA results')
+%     frame = getframe(gcf);
+%     writeVideo(writerObj,frame);
     
     Time = Time + 1;
 end
-close(writerObj);
+% close(writerObj);
+reference = load('bbg2010zholland.txt');
+reference = floor(reference(3:1000,3:1000)/10);
+figure
+imagesc(myField ~= reference);
